@@ -1,0 +1,116 @@
+.page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.header h1 {
+    margin: 0 0 6px 0;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 18px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 14px;
+    padding: 16px;
+    background: white;
+}
+
+    .card h2 {
+        margin-top: 0;
+    }
+
+    .card h3 {
+        margin: 14px 0 8px 0;
+        font-size: 15px;
+        color: #333;
+    }
+
+.sliderRow {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.sliderLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sliderTitle {
+    font-size: 13px;
+    color: #333;
+}
+
+.sliderValue {
+    font-size: 12px;
+    color: #666;
+}
+
+.telemetry {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trow {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.k {
+    color: #333;
+}
+
+.v {
+    font-variant-numeric: tabular-nums;
+    color: #111;
+}
+
+.note {
+    margin-top: 12px;
+    color: #666;
+    font-size: 13px;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sliderRow {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+.vizWrap {
+    width: 100%;
+    height: 260px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.vizCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
