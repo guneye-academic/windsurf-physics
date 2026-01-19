@@ -85,6 +85,30 @@ export default function App() {
 
     const out = useMemo(() => compute(inputs), [inputs]);
 
+    const topSpeed = useMemo(() => {
+        // scan board speeds and find the largest V where drive >= waterDrag
+        let best = 0;
+
+        for (let V = 0; V <= 30; V += 0.1) { // 0..30 m/s (~58 kn)
+            const outV = compute({ ...inputs, boardSpeed: V });
+
+            const drive = Math.max(0, outV.driveN); // negative drive can't overcome drag
+            const waterDrag = waterC0 + waterC2 * V * V;
+
+            if (drive >= waterDrag) best = V;
+        }
+
+        const waterAtBest = waterC0 + waterC2 * best * best;
+        const outAtBest = compute({ ...inputs, boardSpeed: best });
+
+        return {
+            mps: best,
+            kn: best * 1.943844,
+            driveN: outAtBest.driveN,
+            waterDragN: waterAtBest,
+        };
+    }, [inputs, waterC0, waterC2]);
+
     function applyInputs(x: Inputs) {
         setTrueWindSpeed(x.trueWindSpeed);
         setCourseAngleDeg(x.courseAngleDeg);
@@ -227,6 +251,27 @@ export default function App() {
                     />
                     <Slider label="Course angle (0=DW, 180=UW)" value={courseAngleDeg} setValue={setCourseAngleDeg} min={0} max={180} step={1} unit="deg" />
                     <Slider label="Board speed" value={boardSpeed} setValue={setBoardSpeed} min={0} max={18} step={0.5} unit="m/s" />
+                    <h3>Board & water drag (simple)</h3>
+
+                    <Slider
+                        label="Water drag C0 (baseline)"
+                        value={waterC0}
+                        setValue={setWaterC0}
+                        min={0}
+                        max={200}
+                        step={5}
+                        unit="N"
+                    />
+
+                    <Slider
+                        label="Water drag C2 (quadratic)"
+                        value={waterC2}
+                        setValue={setWaterC2}
+                        min={0.0}
+                        max={5.0}
+                        step={0.1}
+                        unit="N/(m/s)^2"
+                    />
 
                     <h3>Rig & trim</h3>
                     <Slider label="Sail area" value={sailArea} setValue={setSailArea} min={3.0} max={10.0} step={0.1} unit="m2" />
@@ -252,6 +297,20 @@ export default function App() {
                         <div className="trow"><div className="k">Drive (forward)</div><div className="v">{fmt(out.driveN, 0)} N</div></div>
                         <div className="trow"><div className="k">Side force</div><div className="v">{fmt(out.sideN, 0)} N</div></div>
                         <div className="trow"><div className="k">Aero power</div><div className="v">{fmt(out.powerW, 0)} W</div></div>
+                        <div className="trow">
+                            <div className="k">Estimated top speed</div>
+                            <div className="v">
+                                {topSpeed.mps.toFixed(1)} m/s ({topSpeed.kn.toFixed(1)} kn)
+                            </div>
+                        </div>
+
+                        <div className="trow">
+                            <div className="k">At top speed: drive vs water drag</div>
+                            <div className="v">
+                                {topSpeed.driveN.toFixed(0)} N vs {topSpeed.waterDragN.toFixed(0)} N
+                            </div>
+                        </div>
+
                     </div>
                     <ForceViz out={out} />
                     <div className="note">
