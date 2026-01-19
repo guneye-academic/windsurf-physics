@@ -92,7 +92,7 @@ export default function App() {
         for (let V = 0; V <= 30; V += 0.1) { // 0..30 m/s (~58 kn)
             const outV = compute({ ...inputs, boardSpeed: V });
 
-            const drive = Math.max(0, outV.driveN); // negative drive can't overcome drag
+            const drive = Math.max(0, -outV.driveN);
             const waterDrag = waterC0 + waterC2 * V * V;
 
             if (drive >= waterDrag) best = V;
@@ -104,7 +104,7 @@ export default function App() {
         return {
             mps: best,
             kn: best * 1.943844,
-            driveN: outAtBest.driveN,
+            driveN: -outAtBest.driveN,
             waterDragN: waterAtBest,
         };
     }, [inputs, waterC0, waterC2]);
