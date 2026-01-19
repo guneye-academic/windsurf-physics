@@ -15,6 +15,7 @@ function Slider(props: {
     max: number;
     step: number;
     unit?: string;
+    hint?: string; // add this
 }) {
     const { label, value, setValue, min, max, step, unit } = props;
     return (
@@ -24,6 +25,7 @@ function Slider(props: {
                 <div className="sliderValue">
                     {value.toFixed(step < 1 ? 1 : 0)}
                     {unit ? ` ${unit}` : ""}
+                    {props.hint ? ` (${props.hint})` : ""}
                 </div>
             </div>
             <input
@@ -38,6 +40,8 @@ function Slider(props: {
     );
 }
 
+const MPS_TO_KT = 1.943844;
+function mpsToKt(v: number) { return v * MPS_TO_KT; }
 function fmt(n: number, digits = 2) {
     if (!Number.isFinite(n)) return "—";
     return n.toFixed(digits);
@@ -60,6 +64,10 @@ export default function App() {
     const [presetName, setPresetName] = useState<string>("My preset");
     const [importText, setImportText] = useState<string>("");
     const [exportText, setExportText] = useState<string>("");
+
+    //Speed
+    const [waterC0, setWaterC0] = useState(30);   // N  (baseline drag)
+    const [waterC2, setWaterC2] = useState(1.2);  // N/(m/s)^2 (quadratic drag)
 
 
     const inputs: Inputs = useMemo(
@@ -207,7 +215,16 @@ export default function App() {
 
 
                     <h3>Environment</h3>
-                    <Slider label="True wind speed" value={trueWindSpeed} setValue={setTrueWindSpeed} min={2} max={20} step={0.5} unit="m/s" />
+                    <Slider
+                        label="True wind speed"
+                        value={trueWindSpeed}
+                        setValue={setTrueWindSpeed}
+                        min={2}
+                        max={20}
+                        step={0.5}
+                        unit="m/s"
+                        hint={`${mpsToKt(trueWindSpeed).toFixed(1)} kn`}
+                    />
                     <Slider label="Course angle (0=DW, 180=UW)" value={courseAngleDeg} setValue={setCourseAngleDeg} min={0} max={180} step={1} unit="deg" />
                     <Slider label="Board speed" value={boardSpeed} setValue={setBoardSpeed} min={0} max={18} step={0.5} unit="m/s" />
 
